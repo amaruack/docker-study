@@ -1,0 +1,8 @@
+
+
+docker run -d --name mongodb --network favorites-net -v mongodb-data:/data/db -e MONGO_INITDB_ROOT_USERNAME=rino -e MONGO_INITDB_ROOT_PASSWORD=rino1234 --rm mongo
+
+## -v /app/node_modules 로 node_modules 이 bind mount 로 지워지는거 제외 처리
+docker run -d --rm -p 80:80 --name multi-backend --network favorites-net -v /app/node_modules -v /Users/son-yeongjun/IdeaProjects/backend-study/docker-test/multi-01-starting-setup/backend:/app -v backend-log:/app/logs multi-backend
+
+docker run -d -it --rm --name multi-frontend -p 3000:3000 -v /app/node_modules -v /Users/son-yeongjun/IdeaProjects/backend-study/docker-test/multi-01-starting-setup/frontend:/app --network favorites-net multi-frontend
