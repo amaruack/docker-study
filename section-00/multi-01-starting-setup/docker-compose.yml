@@ -1,0 +1,61 @@
+version: "3.8"  # ports long syntax use version
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: mongodb
+    networks:
+      - multi-container
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=test
+      - MONGO_INITDB_ROOT_PASSWORD=test1234
+#    env_file:
+#      - ./env/mongodb.env
+    volumes:
+      - mongodb-data:/data/db
+  multi-backend:
+    image: multi-backend
+    container_name: multi-backend
+#    build:
+#      context: ./backend
+#      dockerfile: Dockerfile
+    networks:
+      - multi-container
+    environment:
+      - MONGODB_USERNAME=test
+      - MONGODB_PASSWORD=test1234
+    ports:
+      - 80:80
+    volumes:
+      - /app/node_modules
+      - backend-log:/app/logs
+      - /Users/son-yeongjun/IdeaProjects/backend-study/docker-test/multi-01-starting-setup/backend:/app
+    depends_on:
+      - mongodb
+  multi-frontend:
+    image: multi-frontend
+    container_name: multi-frontend
+#    build: ./frontend
+#    build:
+#      context: ./frontend
+#      dockerfile: Dockerfile
+    networks:
+      - multi-container
+    stdin_open: true
+    tty: true
+    ports:
+      - 3000:3000
+    volumes:
+      - /app/node_modules
+      - /Users/son-yeongjun/IdeaProjects/backend-study/docker-test/multi-01-starting-setup/frontend:/app
+    depends_on:
+      - multi-backend
+
+networks:
+  multi-container:
+    driver: bridge
+
+volumes:
+  backend-log:
+    driver: local
+  mongodb-data:
+    driver: local
